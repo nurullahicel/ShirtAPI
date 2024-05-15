@@ -1,0 +1,6 @@
+@ShirtAPI_HostAddress = http://localhost:5153
+
+GET {{ShirtAPI_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
