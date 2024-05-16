@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using ShirtAPI.Data;
 using ShirtAPI.Filters;
+using ShirtAPI.Filters.ActionFilters;
+using ShirtAPI.Filters.ExceptionFilters;
 using ShirtAPI.Models;
 
 namespace ShirtAPI.Controllers
@@ -10,10 +12,9 @@ namespace ShirtAPI.Controllers
     public class ShirtsController : ControllerBase
     {
         [HttpGet]
-
         public IActionResult GetShirts()
         {
-            return Ok("reading all shirts");
+            return Ok(ShirtStore.GetShirts());
         }
         [HttpGet("{id}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
@@ -22,22 +23,33 @@ namespace ShirtAPI.Controllers
         {
             return Ok(ShirtStore.GetShirtById(id));
         }
-      
+
         [HttpPost]
-        public IActionResult CreateShirt([FromBody]Shirt shirt)
+        [Shirt_ValidateCreateShirtFilter]
+        public IActionResult CreateShirt([FromBody] Shirt shirt)
         {
-            return Ok("dsa");
+            ShirtStore.AddShirt(shirt);
+            return CreatedAtAction(nameof(GetShirtById),
+                new { id = shirt.Id }, shirt);
         }
 
         [HttpPut("{id}")]
-        public IActionResult UpdateShirt(int id)
+        [Shirt_ValidateShirtIdFilter]
+        [Shirt_ValidateUpdateShirtFilter]
+        [Shirt_HandleUpdateExceptionsFilter]
+        public IActionResult UpdateShirt(int id, Shirt shirt)
         {
-            return Ok($"updating shirt :{id}");
+            ShirtStore.UpdateShirt(shirt);
+
+            return NoContent();
         }
         [HttpDelete("{id}")]
+        [Shirt_ValidateShirtIdFilter]
         public IActionResult DeleteShirt(int id)
         {
-            return Ok($"deleting shirt :{id}");
+            var shirt = ShirtStore.GetShirtById(id);
+            ShirtStore.DeleteShirt(id);
+            return Ok(shirt);
         }
 
     }

@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Mvc.Filters;
 using ShirtAPI.Data;
 
-namespace ShirtAPI.Filters
+namespace ShirtAPI.Filters.ActionFilters
 {
     public class Shirt_ValidateShirtIdFilterAttribute : ActionFilterAttribute
     {
@@ -17,7 +17,7 @@ namespace ShirtAPI.Filters
                     context.ModelState.AddModelError("Id", "Shirt is invalid.");
                     var problemDetails = new ValidationProblemDetails(context.ModelState)
                     {
-                        Status=StatusCodes.Status400BadRequest
+                        Status = StatusCodes.Status400BadRequest
                     };
                     context.Result = new BadRequestObjectResult(problemDetails);
                 }
